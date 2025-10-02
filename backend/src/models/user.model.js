@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,    
-            minlegth: 6, 
+            minLength: 6, 
         } ,
         profilePic: {
             type: String, // URL to the profile picture
