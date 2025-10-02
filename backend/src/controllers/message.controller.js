@@ -1,5 +1,8 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
+import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId } from "../lib/socket.js";
+import { io } from "../lib/socket.js";
 
 export const getUsersForSidebar=async(req,res)=>{   
 try{
@@ -20,8 +23,8 @@ export const getMessages=async(req,res)=>{
        
         const messages=await Message.find({
             $or:[
-                {sender:myId,receiver:userToChatId},
-                {sender:userToChatId,receiver:myId}
+                {senderId:myId,receiverId:userToChatId},
+                {senderId:userToChatId,receiverId:myId}
             ]
     })
     res.status(200).json(messages);
@@ -36,7 +39,7 @@ export const sendMessage=async(req,res)=>{
         const {text,image}=req.body;
         const {id:receiverId}=req.params;
         const senderId=req.user._id; // Assuming protectRoute middleware sets req.user ,its my id
-
+      
         let imageUrl;
         if(image){
             //upload base64 image to cloudinar
@@ -44,13 +47,17 @@ export const sendMessage=async(req,res)=>{
             imageUrl=uploadResponse.secure_url;
         }
         const newMessage=new Message({
-            sender:senderId,
-            receiver:receiverId,
+            senderId:senderId,
+            receiverId:receiverId,
             text,
             image:imageUrl
         });
         await newMessage.save();
-        //todo-realtime functionality using socket.io
+        
+        const receiverSocketId=getReceiverSocketId(receiverId);
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage",newMessage);//send only 'to' receiver
+        }
         res.status(201).json(newMessage);
     }catch(error){
         console.error("Error sending message:",error);

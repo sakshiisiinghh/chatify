@@ -1,20 +1,30 @@
 import Navbar from "./components/navbar";
 import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import SignUp from "./pages/SignUpPage";
-import LogIn from "./pages/LogInPage";
+import SignUpPage from "./pages/SignUpPage";
+import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import { use, useEffect } from "react";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
-
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { useThemeStore } from "./store/useThemeStore";
 const App = () => {
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-
+  const { authUser, checkAuth, isCheckingAuth , onlineUsers } = useAuthStore();
+   const { theme, setTheme } = useThemeStore();
+   console.log({onlineUsers});
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  // Apply theme on app initialization
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+  }, [theme]);
 
   console.log("Auth User in App.jsx:", authUser);
   if (isCheckingAuth && !authUser)
@@ -29,11 +39,22 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={authUser ?<HomePage />: <Navigate to="/login"/>} />
-        <Route path="/signup" element={!authUser?<SignUp /> :<Naviagte to="/"/>} />
-        <Route path="/login" element={!authUser?<LogIn />:<Naviagte to="/"/>} />
+        <Route path="/signup" element={!authUser?<SignUpPage /> :<Navigate to="/"/>} />
+        <Route path="/login" element={!authUser?<LoginPage />:<Navigate to="/"/>} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/profile" element={authUser?<ProfilePage />:<Navigate to="/login"/> } />
+        <Route path="/profile" element={
+          isCheckingAuth ? (
+            <div className="flex items-center justify-center h-screen">
+              <Loader className="size-10 animate-spin" />
+            </div>
+          ) : authUser ? (
+            <ProfilePage />
+          ) : (
+            <Navigate to="/login" />
+          )
+        } />
       </Routes>
+      <Toaster/>
     </div>
   );
 };

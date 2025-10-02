@@ -74,14 +74,14 @@ export const login=async (req,res)=>{
 }
 
 export const logout=(req,res)=>{
-   try{
-    res.cookie("jwt","",{maxAge:0})
-        res.status(200).json({message:"Logged out successfully"});
-   }
-   catch(error){
-    console.error("Error during logout:",error);
-    return res.status(500).json({message:"Server error"});
-   }
+    try{
+     res.cookie("token", "", { maxAge: 0 });
+     res.status(200).json({message:"Logged out successfully"});
+    }
+    catch(error){
+     console.error("Error during logout:",error);
+     return res.status(500).json({message:"Server error"});
+    }
 } 
 
 export const updateProfile=async(req,res)=>{
