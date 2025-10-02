@@ -3,9 +3,11 @@ import { useState,useRef } from 'react'
 import { useChatStore } from '../store/useChatStore';
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
+import EmojiPickerComponent from './EmojiPicker';
 const MessageInput = () => {
   const [text,setText]=useState(" ");  
   const [imagePreview,setImagePreview]=useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef=useRef(null);
   const {sendMessage}=useChatStore();
 
@@ -25,6 +27,11 @@ const MessageInput = () => {
   const removeImage=()=>{
      setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleEmojiClick = (emoji) => {
+    setText(prev => prev + emoji);
+    setShowEmojiPicker(false);
   };
   const handleSendMessage= async(e)=>{
     e.preventDefault();
@@ -81,6 +88,14 @@ const MessageInput = () => {
             ref={fileInputRef}
             onChange={handleImageChange}
           />
+          
+          {/* Emoji Picker */}
+          <EmojiPickerComponent
+            onEmojiClick={handleEmojiClick}
+            isOpen={showEmojiPicker}
+            onClose={() => setShowEmojiPicker(false)}
+          />
+          
            <button
             type="button"
             className={`hidden sm:flex btn btn-circle
