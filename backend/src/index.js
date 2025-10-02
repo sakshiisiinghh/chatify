@@ -33,9 +33,20 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-app.get("/", (req, res) => {
-    res.send("API is running...");
-});
+if(process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+    app.get("/", (req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    });
+    // Catch-all handler for client-side routing
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    });
+} else {
+    app.get("/", (req, res) => {
+        res.send("API is running...");
+    });
+}
 
 // Connect to MongoDB first, then start server
 const startServer = async () => {
