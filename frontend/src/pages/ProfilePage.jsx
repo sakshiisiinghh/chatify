@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import { Camera, Mail, User } from "lucide-react";
+import { Camera, Mail, User, Edit3 } from "lucide-react";
+import UpdateNameModal from "../components/UpdateNameModal";
 
 const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -71,7 +73,16 @@ const ProfilePage = () => {
                 <User className="w-4 h-4" />
                 Full Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
+              <div className="flex items-center gap-2">
+                <p className="px-4 py-2.5 bg-base-200 rounded-lg border flex-1">{authUser?.fullName}</p>
+                <button
+                  onClick={() => setIsNameModalOpen(true)}
+                  className="btn btn-ghost btn-sm"
+                  title="Edit name"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -98,6 +109,11 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      
+      <UpdateNameModal 
+        isOpen={isNameModalOpen} 
+        onClose={() => setIsNameModalOpen(false)} 
+      />
     </div>
   );
 };

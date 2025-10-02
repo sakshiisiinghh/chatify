@@ -11,6 +11,7 @@ export const useAuthStore = create((set,get)=>({
     isSigningUp:false,
     isLoggingIn:false,
     isUpdatingProfile:false,
+    isUpdatingName:false,
     isCheckingAuth:true,
     onlineUsers:[],
     socket:null,
@@ -100,6 +101,21 @@ export const useAuthStore = create((set,get)=>({
       toast.error(error.response.data.message);
     } finally {
       set({ isUpdatingProfile: false });
+    }
+  },
+  updateName: async (fullName) => {
+    set({ isUpdatingName: true });
+    try {
+      const res = await axiosInstance.put("/auth/update-name", { fullName });
+      set({ authUser: res.data.user });
+      toast.success("Name updated successfully");
+      return true;
+    } catch (error) {
+      console.log("error in update name:", error);
+      toast.error(error.response?.data?.message || "Failed to update name");
+      return false;
+    } finally {
+      set({ isUpdatingName: false });
     }
   },
   connectSocket: () => {

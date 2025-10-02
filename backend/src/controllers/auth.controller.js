@@ -101,6 +101,39 @@ export const updateProfile=async(req,res)=>{
 
 }
 
+export const updateName=async(req,res)=>{
+    try{
+        const {fullName}=req.body;
+        const userId=req.user._id; //from protectRoute middleware
+        
+        if(!fullName || fullName.trim().length === 0){
+            return res.status(400).json({message:"Full name is required"});
+        }
+        
+        if(fullName.trim().length < 2){
+            return res.status(400).json({message:"Full name must be at least 2 characters long"});
+        }
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {fullName: fullName.trim()},
+            {new: true}
+        ).select('-password'); //exclude password from response
+        
+        if(!updatedUser){
+            return res.status(404).json({message:"User not found"});
+        }
+        
+        res.status(200).json({
+            message: "Name updated successfully",
+            user: updatedUser
+        });
+    }catch(error){
+        console.error("Error updating name:",error);
+        return res.status(500).json({message:"Server error"});
+    }
+}
+
 export const checkAuth=(req,res)=>{ 
     try{
         res.status(200).json(req.user);

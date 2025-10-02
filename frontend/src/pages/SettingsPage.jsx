@@ -1,6 +1,9 @@
 import { THEMES } from "../constants";
 import { useThemeStore } from "../store/useThemeStore";
-import { Send } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore";
+import { Send, User, Edit3 } from "lucide-react";
+import { useState } from "react";
+import UpdateNameModal from "../components/UpdateNameModal";
 
 const PREVIEW_MESSAGES = [
   { id: 1, content: "Hey! How's it going?", isSent: false },
@@ -9,10 +12,39 @@ const PREVIEW_MESSAGES = [
 
 const SettingsPage = () => {
   const { theme, setTheme } = useThemeStore();
+  const { authUser } = useAuthStore();
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
 
   return (
     <div className="h-screen container mx-auto px-4 pt-20 max-w-5xl">
       <div className="space-y-6">
+        {/* User Profile Section */}
+        <div className="bg-base-200 rounded-xl p-6">
+          <div className="flex flex-col gap-1 mb-4">
+            <h2 className="text-lg font-semibold">Profile Settings</h2>
+            <p className="text-sm text-base-content/70">Manage your profile information</p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <div className="text-sm text-base-content/70 flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Full Name
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="px-4 py-2.5 bg-base-100 rounded-lg border flex-1">{authUser?.fullName}</p>
+                <button
+                  onClick={() => setIsNameModalOpen(true)}
+                  className="btn btn-ghost btn-sm"
+                  title="Edit name"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold">Theme</h2>
           <p className="text-sm text-base-content/70">Choose a theme for your chat interface</p>
@@ -110,6 +142,11 @@ const SettingsPage = () => {
           </div>
         </div>
       </div>
+      
+      <UpdateNameModal 
+        isOpen={isNameModalOpen} 
+        onClose={() => setIsNameModalOpen(false)} 
+      />
     </div>
   );
 };
