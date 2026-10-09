@@ -19,7 +19,7 @@ const Sidebar = () => {
   // 👇 4. Create a handler for the delete action
   const handleDelete = async (e, userId) => {
     e.stopPropagation(); // Prevents the user selection onClick from firing
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    if (window.confirm("Delete this chat and remove the contact from your list?")) {
       await deleteUser(userId);
     }
   };

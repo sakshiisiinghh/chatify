@@ -74,13 +74,14 @@ unsubscribeFromMessages: () => {
 
    deleteUser: async (userId) => {
     try {
-      await axiosInstance.delete(`/users/${userId}`);
+      await axiosInstance.delete(`/messages/${userId}`);
       
       // Update the state by removing the deleted user
       set((state) => ({
         users: state.users.filter((user) => user._id !== userId),
         // If the deleted user was selected, unselect them
         selectedUser: state.selectedUser?._id === userId ? null : state.selectedUser,
+        messages: state.selectedUser?._id === userId ? [] : state.messages,
       }));
 
     } catch (error) {
