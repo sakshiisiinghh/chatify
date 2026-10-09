@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema(
             type: String, // URL to the profile picture
             default: "",  // Default to an empty string if no picture is provided
         },  
+        hiddenContacts: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // chats this user removed from their sidebar
 }, 
 { timestamps: true });
 
